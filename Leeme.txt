@@ -1,0 +1,104 @@
+Combinando Express.js y Stitch
+
+npm install express
+
+mkdir server
+
+mkdir server/app.js
+
+Y escribir lo siguiente:
+
+//dependencias
+var express = require('express');
+var logger = require('morgan');
+
+//una ayuda para resolver path relativos
+var path = require('path');
+
+//Inicializar la aplicación
+var app = express();
+
+app.use(logger({immediate: true, format: 'dev'}));
+
+app.get('/',function(req,res){
+	var html = path.resolve(__dirname + '/../index.html');
+	res.senfile(html);
+});
+
+//Puerto 5000
+app.listen(5000);
+console.log("Server is running");
+
+node server/app.js
+
+localhost:5000/
+
+Nota curl es un comando no instalado en windows... ver su instalación
+curl 0.0.0.0:5000
+
+D:\Jonatan\repositorioBackbone>curl localhost:5000
+<!doctype html>
+<html>
+  <head>
+    <title>Backbone Inicializaci¾n2</title>
+  </head>
+  <body>
+                Servidor con express and Stitch
+  </body>
+</html>
+
+Stitch
+
+npm install stitch
+
+Creamos app/appStitch.js
+
+var express = require('express'),
+path = require('path'),
+stitch = require('stitch');
+// stitch el client-side modules
+//Creamos un paquete
+
+var package = stitch.createPackage({
+paths: [
+	__dirname+ '/../app',
+		
+],
+dependencies:[
+__dirname+ '/../libs/jquery.js',
+__dirname+ '/../libs/underscore.js',
+__dirname+ '/../libs/backbone.js',		
+]
+});
+
+var app = express();
+
+app.use(express.static(__dirname + '/public'));
+
+//Cuando el cliente realice una solicitud, nosotros desplegamos los modulos como bundle.js
+
+app.get('/static/bundle.js', package.createServer());
+
+app.get('/', function(req, res)){
+	console.log("--> /");
+	var html = path.resolve(__dirname + '/../index.html');
+	res.sendfile(html);
+}
+
+app.listen(5000);
+console.log("Server is running");
+
+curl localhost:5000/static/bundle.js
+
+Luego creamos directorio mkdir app
+y un fichero app/init.js
+console.log("Hello, world");
+
+node app/appStitch.js
+{"main": function(exports, require, module){
+
+	console.log("Hello world");
+}
+
+
+
